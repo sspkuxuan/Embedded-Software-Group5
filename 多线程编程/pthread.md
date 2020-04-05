@@ -38,14 +38,15 @@ sem_post(pSemrnw);
 sem_wait(pSemrnw); 创建1个有名信号，等主线程创建完9个线程之后再发sem信号使其同时开始工作。
 ```
 #### 读优先判断：
-
+```
 all_status = get_status(writer_rnw->read_status);
-
 if(6==all_status)
+```
 主要是用上述判断语句，等所有读者结束之后再进行写操作。
-
 如果是写优先场景，也是一样，写者写操作时上互斥锁。先判断是否在写的状态，当不在写的状态时，读者进行读操作。
-#### 互斥锁：		
+
+#### 互斥锁：
+```
 while(1)
 {
 	
@@ -74,6 +75,7 @@ while(1)
 			usleep(TRY_WRITE_USLEEP);
 	  }
 }
+```
 
 ### (3) 实验结果截图
 
