@@ -3,6 +3,7 @@
 |     **⼩组名称：    第五组**         |
 | **小组成员：隆非非、卓佳佳、刘政** |
  
+ 
 
 
 # 一、实验目的
@@ -32,44 +33,47 @@
 #### 信号传递：
 
 ```
-	    	sem_t * pSemrnw = sem_open(SEM_rnw, O_CREAT, 0666, 0); 
-		sem_post(pSemrnw); 
-		sem_wait(pSemrnw); 创建1个有名信号，等主线程创建完9个线程之后再发sem信号使其同时开始工作。
+sem_t * pSemrnw = sem_open(SEM_rnw, O_CREAT, 0666, 0); 
+sem_post(pSemrnw); 
+sem_wait(pSemrnw); 创建1个有名信号，等主线程创建完9个线程之后再发sem信号使其同时开始工作。
 ```
 #### 读优先判断：
-        	all_status = get_status(writer_rnw->read_status);
-		if(6==all_status)
+
+all_status = get_status(writer_rnw->read_status);
+
+if(6==all_status)
 主要是用上述判断语句，等所有读者结束之后再进行写操作。
 
 如果是写优先场景，也是一样，写者写操作时上互斥锁。先判断是否在写的状态，当不在写的状态时，读者进行读操作。
 #### 互斥锁：		
-	while(1)
-	{
-		pthread_mutex_lock(&(writer_rnw->writer_mutex));// 先抢锁，后判断状态；未抢到就一直抢
+while(1)
+{
+	
+	pthread_mutex_lock(&(writer_rnw->writer_mutex));// 先抢锁，后判断状态；未抢到就一直抢
 		
-		all_status = get_status(writer_rnw->read_status);
-		if(6==all_status)  // 都读完了，可以开始写
-		{
-			mystrcpy(writer_rnw->buf, words, write_num);
-			printf("______writer%d has written something\n",write_num);
-			mytimes_to_write--;
-			if(0==mytimes_to_write)
-			{
-				pthread_mutex_unlock(&(writer_rnw->writer_mutex));// 解锁
-				break;
-			}
+	all_status = get_status(writer_rnw->read_status);
+	if(6==all_status)  // 都读完了，可以开始写
+	   {
+		mystrcpy(writer_rnw->buf, words, write_num);
+		printf("______writer%d has written something\n",write_num);
+		mytimes_to_write--;
+		if(0==mytimes_to_write)
+		  {
+			pthread_mutex_unlock(&(writer_rnw->writer_mutex));// 解锁
+			break;
+		  }
 				
 			
-			pthread_mutex_unlock(&(writer_rnw->writer_mutex));// 写后，解锁
+		pthread_mutex_unlock(&(writer_rnw->writer_mutex));// 写后，解锁
 			
-			usleep(WRITE_USLEEP); // 写一次后休眠较长时间，等待其他写操作
-		}
+		usleep(WRITE_USLEEP); // 写一次后休眠较长时间，等待其他写操作
+	  }
 		else
-		{
+	  {
 			pthread_mutex_unlock(&(writer_rnw->writer_mutex));// 不能写，也要解锁
 			usleep(TRY_WRITE_USLEEP);
-		}
-	}
+	  }
+}
 
 ### (3) 实验结果截图
 
