@@ -32,12 +32,12 @@
 #### 信号传递：
 
 ```
-	    sem_t * pSemrnw = sem_open(SEM_rnw, O_CREAT, 0666, 0); 
+	    	sem_t * pSemrnw = sem_open(SEM_rnw, O_CREAT, 0666, 0); 
 		sem_post(pSemrnw); 
 		sem_wait(pSemrnw); 创建1个有名信号，等主线程创建完9个线程之后再发sem信号使其同时开始工作。
 ```
 #### 读优先判断：
-        all_status = get_status(writer_rnw->read_status);
+        	all_status = get_status(writer_rnw->read_status);
 		if(6==all_status)
 主要是用上述判断语句，等所有读者结束之后再进行写操作。
 
